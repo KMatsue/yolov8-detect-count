@@ -11,14 +11,14 @@ now = datetime.now()
 model = YOLO('yolov8s.pt')
 
 
-def RGB(event, x, y, flags, param):
+def rgb(event, x, y, flags, param):
     if event == cv2.EVENT_MOUSEMOVE:
         colorsBGR = [x, y]
         print(colorsBGR)
 
 
 cv2.namedWindow('RGB')
-cv2.setMouseCallback('RGB', RGB)
+cv2.setMouseCallback('RGB', rgb)
 
 cap = cv2.VideoCapture('peoplecount.mp4')
 
@@ -32,11 +32,16 @@ area = [(54, 436), (41, 449), (317, 494), (317, 470)]
 area_c = set()
 
 
-def imgwrite(img):
+def img_write(img):
     now = datetime.now()
     current_time = now.strftime("%d_%m_%Y_%H_%M_%S")
     filename = '%s.png' % current_time
-    cv2.imwrite(os.path.join("img", filename),
+
+    crop_dir_name = "crop_images"
+    if not os.path.exists(crop_dir_name):
+        os.mkdir(crop_dir_name)
+
+    cv2.imwrite(os.path.join(crop_dir_name, filename),
                 img)
 
 
@@ -77,7 +82,7 @@ while True:
         cv2.putText(frame, str(id), (x3, y3), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 0, 0), 1)
         if results >= 0:
             crop = frame[y3:y4, x3:x4]
-            imgwrite(crop)
+            img_write(crop)
             #            cv2.imshow(str(id),crop)
             area_c.add(id)
     cv2.polylines(frame, [np.array(area, np.int32)], True, (255, 0, 0), 2)
