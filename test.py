@@ -49,6 +49,7 @@ while True:
     if not ret:
         break
     count += 1
+
     # 2フレームに1回処理を早くするためスキップする
     if count % 2 != 0:
         continue
@@ -57,9 +58,10 @@ while True:
 
     results = model.predict(frame)
     #   print(results)
-    a = results[0].boxes.data
-    print(a)
-    px = pd.DataFrame(a).astype("float")
+
+    detect_data = results[0].boxes.data
+    print(detect_data)
+    px = pd.DataFrame(detect_data).astype("float")
     print(px)
     detect_list = []
     for index, row in px.iterrows():
