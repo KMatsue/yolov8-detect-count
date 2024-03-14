@@ -6,8 +6,6 @@ from tracker import *
 from datetime import datetime
 import os
 
-now = datetime.now()
-
 model = YOLO('yolov8s.pt')
 
 
@@ -22,8 +20,9 @@ cv2.setMouseCallback('RGB', rgb)
 
 cap = cv2.VideoCapture('peoplecount.mp4')
 
-my_file = open("coco.txt", "r")
-data = my_file.read()
+with open("coco.txt", "r") as f:
+    data: str = f.read()
+
 class_list = data.split("\n")
 # print(class_list)
 count = 0
@@ -50,6 +49,7 @@ while True:
     if not ret:
         break
     count += 1
+    # 2フレームに1回処理を早くするためスキップする
     if count % 2 != 0:
         continue
 
@@ -58,12 +58,13 @@ while True:
     results = model.predict(frame)
     #   print(results)
     a = results[0].boxes.data
+    print(a)
     px = pd.DataFrame(a).astype("float")
-    #    print(px)
-    list = []
+    print(px)
+    detect_list = []
     for index, row in px.iterrows():
-        #        print(row)
-
+        # print(row)
+        # (x1,y1):バウンディングbox左上座標, (x2,y2):BBox右下座標, d:信頼度, c:検出種別(0=person)
         x1 = int(row[0])
         y1 = int(row[1])
         x2 = int(row[2])
@@ -71,12 +72,12 @@ while True:
         d = int(row[5])
         c = class_list[d]
         if 'person' in c:
-            list.append([x1, y1, x2, y2])
+            detect_list.append([x1, y1, x2, y2])
 
-    bbox_idx = tracker.update(list)
+    bbox_idx = tracker.update(detect_list)
     for bbox in bbox_idx:
         x3, y3, x4, y4, id = bbox
-        results = cv2.pointPolygonTest(np.array(area, np.int32), ((x4, y4)), False)
+        results = cv2.pointPolygonTest(np.array(area, np.int32), (x4, y4), False)
         cv2.rectangle(frame, (x3, y3), (x4, y4), (0, 255, 0), 2)
         cv2.circle(frame, (x4, y4), 4, (255, 0, 255), -1)
         cv2.putText(frame, str(id), (x3, y3), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 0, 0), 1)
@@ -85,11 +86,14 @@ while True:
             img_write(crop)
             #            cv2.imshow(str(id),crop)
             area_c.add(id)
-    cv2.polylines(frame, [np.array(area, np.int32)], True, (255, 0, 0), 2)
+    cv2.polylines(frame, [np.array(area, np.int32)], True, (255, 0, 0), 1)
+    # --- カウント表示 ---
     print(area_c)
     k = len(area_c)
     cv2.putText(frame, str(k), (50, 60), cv2.FONT_HERSHEY_PLAIN, 5, (255, 0, 0), 3)
+
     cv2.imshow("RGB", frame)
+    # 0xFF == 27(escキー)が押されると1ms後に画面が閉じる
     if cv2.waitKey(1) & 0xFF == 27:
         break
 cap.release()
