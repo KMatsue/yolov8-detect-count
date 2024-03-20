@@ -3,7 +3,6 @@ import pandas as pd
 from ultralytics import YOLO
 from tracker import *
 import cvzone
-import numpy as np
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +24,6 @@ with open(ROOT_DIR / "coco.txt", "r") as f:
     data: str = f.read()
 
 class_list: list = data.split("\n")
-# print(class_list)
 
 count = 0
 tracker = Tracker()
@@ -61,8 +59,11 @@ while True:
         c = class_list[d]
         if 'person' in c:
             detect_list.append([x1, y1, x2, y2])
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 255, 255), 2)
-            cvzone.putTextRect(frame, f'{c}', (x1, y1), 1, 1)
+    bbox_idx = tracker.update(detect_list)
+    for bbox in bbox_idx:
+        x3, y3, x4, y4, id1 = bbox
+        cv2.rectangle(frame, (x3, y3), (x4, y4), (255, 255, 255), 2)
+        cvzone.putTextRect(frame, f'{id1}', (x3, y3), 1, 1)
 
     cv2.imshow("RGB", frame)
     if cv2.waitKey(1) & 0xFF == 27:
