@@ -30,7 +30,7 @@ count = 0
 
 tracker = Tracker()
 
-cy1 = 322
+cy1 = 323
 cy2 = 368
 offset = 6
 
@@ -64,15 +64,20 @@ while True:
     bbox_ids = tracker.update(detect_list)
     for bbox in bbox_ids:
         x3, y3, x4, y4, id = bbox
+
+        # オブジェクトの中心座標
         cx = int(x3 + x4) // 2
         cy = int(y3 + y4) // 2
+
         cv2.circle(frame, (cx, cy), 4, (0, 0, 255), -1)
         cv2.putText(frame, str(id), (cx, cy), cv2.FONT_HERSHEY_COMPLEX, 0.8, (0, 255, 255), 2)
 
-    # cv2.line(frame,(274,cy1),(814,cy1),(255,255,255),1)
-    # cv2.line(frame,(177,cy2),(927,cy2),(255,255,255),1)
+    cv2.line(frame, (264, cy1), (829, cy1), (255, 255, 255), 1)
+    cv2.putText(frame, '1line', (270, 318), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 255), 2)
+    cv2.line(frame, (167, cy2), (932, cy2), (255, 255, 255), 1)
+    cv2.putText(frame, '2line', (177, 360), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 255), 2)
     cv2.imshow("RGB", frame)
-    if cv2.waitKey(1) & 0xFF == 27:
+    if cv2.waitKey(0) & 0xFF == 27:
         break
 cap.release()
 cv2.destroyAllWindows()
