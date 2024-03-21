@@ -1,17 +1,22 @@
+Brotli==1.1.0
 certifi==2024.2.2
 charset-normalizer==3.3.2
+colorlog==6.8.2
 contourpy==1.2.0
 cvzone==1.6.1
 cycler==0.12.1
+Cython==3.0.9
 filelock==3.13.1
 fonttools==4.49.0
 fsspec==2024.2.0
 idna==3.6
+install==1.3.5
 Jinja2==3.1.3
 kiwisolver==1.4.5
 MarkupSafe==2.1.5
 matplotlib==3.8.3
 mpmath==1.3.0
+mutagen==1.47.0
 networkx==3.2.1
 numpy==1.26.4
 opencv-python==4.9.0.80
@@ -20,6 +25,7 @@ pandas==2.2.1
 pillow==10.2.0
 psutil==5.9.8
 py-cpuinfo==9.0.0
+pycryptodomex==3.20.0
 pyparsing==3.1.2
 python-dateutil==2.9.0.post0
 pytz==2024.1
@@ -37,3 +43,4 @@ typing_extensions==4.10.0
 tzdata==2024.1
 ultralytics==8.1.27
 urllib3==2.2.1
+websockets==12.0
