@@ -44,6 +44,7 @@ while True:
     count += 1
     if count % 3 != 0:
         continue
+
     frame = cv2.resize(frame, (1020, 500))
 
     results = model.predict(frame)
@@ -68,12 +69,18 @@ while True:
         # cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 255), 2)
 
     bbox_idx = tracker.update(detect_list)
-    print(bbox_idx)
-    # for bbox in bbox_idx:
-        # x3, y3, x4, y4, id = bbox
-        # cv2.rectangle(frame, (x3, y3), (x4, y4), (255, 0, 255), 2)
-        # cvzone.putTextRect(frame, f'{id}', (x3, y3), 1, 1)
-
+    print(type(bbox_idx))
+    for object_id, rect in bbox_idx.items():
+        x3, y3, x4, y4 = rect
+        results = cv2.pointPolygonTest(np.array(area1, np.int32), (x3, y4), False)
+        if results >= 0:
+            if counter.count(object_id) == 0:
+                counter.append(object_id)
+        cv2.rectangle(frame, (x3, y3), (x4, y4), (255, 0, 255), 2)
+        cv2.circle(frame, (x3, y4), 6, (0, 255, 0), -1)
+        cvzone.putTextRect(frame, f'{object_id}', (x3, y3), 1, 1)
+    cvzone.putTextRect(frame, f'person_count:{len(counter)}', (60, 60), 1, 1)
+    cv2.polylines(frame, [np.array(area1, np.int32)], True, (255, 255, 255), 2)
     cv2.imshow("RGB", frame)
     if cv2.waitKey(1) & 0xFF == 27:
         break
