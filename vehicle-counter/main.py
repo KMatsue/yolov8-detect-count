@@ -30,9 +30,15 @@ count = 0
 
 tracker = Tracker()
 
-cy1 = 323
-cy2 = 368
-offset = 6
+cy1: int = 323
+cy2: int = 368
+offset: int = 6
+
+vh_down = {}
+down_counter = []
+
+vh_up = {}
+up_counter = []
 
 while True:
     ret, frame = cap.read()
@@ -69,13 +75,30 @@ while True:
         cx = int(x3 + x4) // 2
         cy = int(y3 + y4) // 2
 
-        cv2.circle(frame, (cx, cy), 4, (0, 0, 255), -1)
-        cv2.putText(frame, str(id), (cx, cy), cv2.FONT_HERSHEY_COMPLEX, 0.8, (0, 255, 255), 2)
-
+        # cyの値がcy1の±offset範囲内の場合True
+        if (cy + offset) > cy1 > (cy - offset):
+            vh_down[id] = cy
+        if id in vh_down:
+            # cyの値がcy2の±offset範囲内の場合True
+            if (cy + offset) > cy2 > (cy - offset):
+                cv2.rectangle(frame, (x3, y3), (x4, y4), (255, 0, 255), 2)
+                cv2.circle(frame, (cx, cy), 4, (0, 0, 255), -1)
+                cv2.putText(frame, str(id), (cx, cy), cv2.FONT_HERSHEY_COMPLEX, 0.8, (0, 255, 255), 2)
+                if down_counter.count(id) == 0:
+                    down_counter.append(id)
+    # line1
     cv2.line(frame, (264, cy1), (829, cy1), (255, 255, 255), 1)
     cv2.putText(frame, '1line', (270, 318), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 255), 2)
+
+    # line2
     cv2.line(frame, (167, cy2), (932, cy2), (255, 255, 255), 1)
     cv2.putText(frame, '2line', (177, 360), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 255), 2)
+
+    # カウント数表示
+    cv2.putText(frame, f'DownCount:{len(down_counter)}', (60, 40), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 255), 2)
+    cv2.putText(frame, f'UpCount:{len(up_counter)}', (60, 100), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 255), 2)
+
+    print(down_counter)
     cv2.imshow("RGB", frame)
     if cv2.waitKey(0) & 0xFF == 27:
         break
