@@ -2,14 +2,14 @@ import cv2
 import numpy as np
 import pandas as pd
 from ultralytics import YOLO
-from tracker import *
+from tracker import Tracker
 import cvzone
 from pathlib import Path
 import os
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
-model = YOLO(ROOT_DIR / 'yolov8s.pt')
+model = YOLO(ROOT_DIR / "yolov8s.pt")
 
 
 def RGB(event, x, y, flags, param):
@@ -18,11 +18,11 @@ def RGB(event, x, y, flags, param):
         print(point)
 
 
-print("file exists?", os.path.exists('busfinal.mp4'))
+print("file exists?", os.path.exists("busfinal.mp4"))
 
-cv2.namedWindow('RGB')
-cv2.setMouseCallback('RGB', RGB)
-cap = cv2.VideoCapture('busfinal.mp4')
+cv2.namedWindow("RGB")
+cv2.setMouseCallback("RGB", RGB)
+cap = cv2.VideoCapture("busfinal.mp4")
 
 with open(ROOT_DIR / "coco.txt", "r") as f:
     data: str = f.read()
@@ -64,7 +64,7 @@ while True:
         d = int(row[5])
         c = class_list[d]
 
-        if 'person' in c:
+        if "person" in c:
             detect_list.append([x1, y1, x2, y2])
         # cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 255), 2)
 
@@ -78,13 +78,13 @@ while True:
                 counter.append(object_id)
         cv2.rectangle(frame, (x3, y3), (x4, y4), (255, 0, 255), 2)
         cv2.circle(frame, (x3, y4), 6, (0, 255, 0), -1)
-        cvzone.putTextRect(frame, f'{object_id}', (x3, y3), 1, 1)
-    cvzone.putTextRect(frame, f'person_count:{len(counter)}', (60, 60), 1, 1)
+        cvzone.putTextRect(frame, f"{object_id}", (x3, y3), 1, 1)
+    cvzone.putTextRect(frame, f"person_count:{len(counter)}", (60, 60), 1, 1)
     cv2.polylines(frame, [np.array(area1, np.int32)], True, (255, 255, 255), 2)
     cv2.imshow("RGB", frame)
     if cv2.waitKey(1) & 0xFF == 27:
         break
 cap.release()
 cv2.destroyAllWindows()
-if __name__ == '__main__':
-    print('a')
+if __name__ == "__main__":
+    print("a")

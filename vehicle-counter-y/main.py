@@ -10,7 +10,7 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 
 model = YOLO(ROOT_DIR / "yolov8s.pt")
 
-cap = cv2.VideoCapture("car-count-y.mp4")
+cap = cv2.VideoCapture("./car-count-y.mp4")
 
 
 def mouse_event(event, x, y, flags, param):
