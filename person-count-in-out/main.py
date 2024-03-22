@@ -1,10 +1,12 @@
+from pathlib import Path
+
 import cv2
+import cvzone
 import numpy as np
 import pandas as pd
 from ultralytics import YOLO
+
 from tracker import *
-import cvzone
-from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
