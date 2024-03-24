@@ -6,11 +6,11 @@ import numpy as np
 import pandas as pd
 from ultralytics import YOLO
 
-from tracker import *
+from tracker import Tracker
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
-model = YOLO(ROOT_DIR / 'yolov8s.pt')
+model = YOLO(ROOT_DIR / "yolov8s.pt")
 
 
 def RGB(event, x, y, flags, param):
@@ -19,9 +19,9 @@ def RGB(event, x, y, flags, param):
         print(point)
 
 
-cv2.namedWindow('RGB')
-cv2.setMouseCallback('RGB', RGB)
-cap = cv2.VideoCapture('p.mp4')
+cv2.namedWindow("RGB")
+cv2.setMouseCallback("RGB", RGB)
+cap = cv2.VideoCapture(f"{str(Path(__file__).parent)}/p.mp4")
 
 with open(ROOT_DIR / "coco.txt", "r") as f:
     data: str = f.read()
@@ -70,7 +70,7 @@ while True:
         d = int(row[5])
 
         c = class_list[d]
-        if 'person' in c:
+        if "person" in c:
             detect_list.append([x1, y1, x2, y2])
 
     bbox_idx = tracker.update(detect_list)
@@ -85,7 +85,7 @@ while True:
             if results1 >= 0:
                 cv2.rectangle(frame, (x3, y3), (x4, y4), (255, 255, 255), 2)
                 cv2.circle(frame, (x4, y4), 4, (255, 0, 255), -1)
-                cvzone.putTextRect(frame, f'{id}', (x3, y3), 1, 1)
+                cvzone.putTextRect(frame, f"{id}", (x3, y3), 1, 1)
                 if counter_out.count(id) == 0:
                     counter_out.append(id)
 
@@ -97,13 +97,13 @@ while True:
             if results3 >= 0:
                 cv2.rectangle(frame, (x3, y3), (x4, y4), (255, 0, 0), 2)
                 cv2.circle(frame, (x4, y4), 4, (255, 0, 255), -1)
-                cvzone.putTextRect(frame, f'{id}', (x3, y3), 1, 1)
+                cvzone.putTextRect(frame, f"{id}", (x3, y3), 1, 1)
                 if counter_in.count(id) == 0:
                     counter_in.append(id)
     print(counter_in)
     # カウント数描画
-    cvzone.putTextRect(frame, f'OUT_COUNT:{len(counter_out)}', (50, 60), 2, 2)
-    cvzone.putTextRect(frame, f'IN_COUNT:{len(counter_in)}', (50, 160), 2, 2)
+    cvzone.putTextRect(frame, f"OUT_COUNT:{len(counter_out)}", (50, 60), 2, 2)
+    cvzone.putTextRect(frame, f"IN_COUNT:{len(counter_in)}", (50, 160), 2, 2)
 
     # カウントエリア描画
     cv2.polylines(frame, [np.array(area1, np.int32)], True, (0, 255, 0), 1)
@@ -116,5 +116,5 @@ while True:
 cap.release()
 cv2.destroyAllWindows()
 
-if __name__ == '__main__':
-    print('a')
+if __name__ == "__main__":
+    print("a")
