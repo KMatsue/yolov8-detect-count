@@ -7,12 +7,13 @@ from ultralytics import YOLO
 from tracker import Tracker
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
-# print("あ")
 # print(f"{str(Path(__file__).parent)}/car-count-x02.mov")
 
 model = YOLO(ROOT_DIR / "yolov8s.pt")
 
 cap = cv2.VideoCapture(f"{str(Path(__file__).parent)}/car-count-x02.mov")
+
+# fps = float(cap.get(cv2.CAP_PROP_FPS))
 
 
 def mouse_event(event, x, y, flags, param):
@@ -24,22 +25,22 @@ def mouse_event(event, x, y, flags, param):
 cv2.namedWindow("counter_window")
 cv2.setMouseCallback("counter_window", mouse_event)
 
-# fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-# print(fourcc)
-# video = cv2.VideoWriter(
-#     f"{str(Path(__file__).parent)}/ImgVideo.avi", fourcc, 20, (1020, 500)
-# )
+frame_size = (1020, 600)
+
+fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+# # print(fourcc)
+video = cv2.VideoWriter(
+    f"{str(Path(__file__).parent)}/ImgVideo1.avi", fourcc, 30, frame_size
+)
 
 with open(ROOT_DIR / "coco.txt", "r") as f:
     data: str = f.read()
 
 class_list: list = data.split("\n")
 
-
 count = 0
 
 tracker = Tracker()
-
 
 cx1: int = 500
 cx2: int = 630
@@ -58,7 +59,7 @@ while True:
     count += 1
     if count % 3 != 0:
         continue
-    frame = cv2.resize(frame, (1020, 500))
+    frame = cv2.resize(frame, frame_size)
 
     results = model.predict(frame)
     # print(results)
@@ -86,7 +87,15 @@ while True:
         cx = int(x3 + x4) // 2
         cy = int(y3 + y4) // 2
         cv2.rectangle(frame, (x3, y3), (x4, y4), (200, 10, 100), 1)
-        # cv2.circle(frame, (cx, cy), 4, (0, 0, 255), -1)
+        cv2.circle(frame, (cx, cy), 4, (0, 0, 255), -1)
+        cv2.putText(
+            frame,
+            str(id),
+            (x3, y3),
+            cv2.FONT_HERSHEY_COMPLEX,
+            0.8,
+            (0, 255, 255),
+            2)
         # ----右方向に動く車両のカウント----
         # cyの値がcy1の±offset範囲内の場合True
         if (cx + offset) > cx1 > (cx - offset):
@@ -94,17 +103,18 @@ while True:
         if id in vh_down:
             # cyの値がcy2の±offset範囲内の場合True
             if (cx + offset) > cx2 > (cx - offset):
-                cv2.rectangle(frame, (x3, y3), (x4, y4), (255, 0, 255), 2)
-                cv2.circle(frame, (cx, cy), 4, (0, 0, 255), -1)
-                cv2.putText(
-                    frame,
-                    str(id),
-                    (cx, cy),
-                    cv2.FONT_HERSHEY_COMPLEX,
-                    0.8,
-                    (0, 255, 255),
-                    2,
-                )
+                cv2.line(frame, (cx2, 40), (cx2, 520), (0, 0, 255), 2)
+                # cv2.rectangle(frame, (x3, y3), (x4, y4), (255, 0, 255), 2)
+                # cv2.circle(frame, (cx, cy), 4, (0, 0, 255), -1)
+                # cv2.putText(
+                #     frame,
+                #     str(id),
+                #     (x3, y3),
+                #     cv2.FONT_HERSHEY_COMPLEX,
+                #     0.8,
+                #     (0, 255, 255),
+                #     2)
+
                 if down_counter.count(id) == 0:
                     down_counter.append(id)
 
@@ -115,49 +125,50 @@ while True:
         if id in vh_up:
             # cyの値がcy1の±offset範囲内の場合True
             if (cx + offset) > cx1 > (cx - offset):
-                cv2.rectangle(frame, (x3, y3), (x4, y4), (255, 0, 100), 2)
-                cv2.circle(frame, (cx, cy), 4, (0, 0, 255), -1)
-                cv2.putText(
-                    frame,
-                    str(id),
-                    (cx, cy),
-                    cv2.FONT_HERSHEY_COMPLEX,
-                    0.8,
-                    (0, 255, 255),
-                    2,
-                )
+                cv2.line(frame, (cx1, 40), (cx1, 520), (0, 0, 255), 2)
+                # cv2.rectangle(frame, (x3, y3), (x4, y4), (255, 0, 100), 2)
+                # cv2.circle(frame, (cx, cy), 4, (0, 0, 255), -1)
+                # cv2.putText(
+                #     frame,
+                #     str(id),
+                #     (cx, cy),
+                #     cv2.FONT_HERSHEY_COMPLEX,
+                #     0.8,
+                #     (0, 255, 255),
+                #     2,
+                # )
                 if up_counter.count(id) == 0:
                     up_counter.append(id)
 
     # line1
-    cv2.line(frame, (cx1, 40), (cx1, 400), (255, 255, 255), 1)
+    cv2.line(frame, (cx1, 40), (cx1, 520), (255, 255, 255), 1)
     cv2.putText(
-        frame, "1line", (cx1, 40), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 255), 2
+        frame, f"1line:cx1({cx1})", (cx1, 40), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 255), 2
     )
 
     # line2
-    cv2.line(frame, (cx2, 40), (cx2, 400), (255, 255, 255), 1)
+    cv2.line(frame, (cx2, 40), (cx2, 520), (255, 255, 255), 1)
     cv2.putText(
-        frame, "2line", (cx2, 40), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 255), 2
+        frame, f"2line:cx2({cx2})", (cx2, 40), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 255), 2
     )
 
     # カウント数表示
     cv2.putText(
         frame,
         f"RightCount:{len(down_counter)}",
-        (60, 40),
+        (60, 55),
         cv2.FONT_HERSHEY_COMPLEX,
         0.6,
-        (0, 255, 255),
+        (255, 100, 255),
         2,
     )
     cv2.putText(
         frame,
         f"LeftCount:{len(up_counter)}",
-        (60, 100),
+        (60, 115),
         cv2.FONT_HERSHEY_COMPLEX,
         0.6,
-        (0, 255, 255),
+        (255, 100, 255),
         2,
     )
     print(vh_down)
@@ -165,7 +176,7 @@ while True:
     print(f"up:{up_counter}")
 
     cv2.imshow("counter_window", frame)
-    # video.write(frame)
+    video.write(frame)
 
     if cv2.waitKey(1) & 0xFF == 27:
         break
