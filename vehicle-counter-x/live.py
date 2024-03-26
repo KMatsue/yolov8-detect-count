@@ -15,7 +15,7 @@ model = YOLO(ROOT_DIR / "yolov8s.pt")
 options = {
     # "CAP_PROP_FRAME_WIDTH": 320, # resolution 320x240
     # "CAP_PROP_FRAME_HEIGHT": 240,
-    "CAP_PROP_FPS": 60,  # framerate 60fps
+    "CAP_PROP_FPS": 30,  # framerate 60fps
 }
 
 # YouTube Video URL as input
