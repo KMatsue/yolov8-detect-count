@@ -13,6 +13,7 @@ model = YOLO(ROOT_DIR / "yolov8s.pt")
 
 cap = cv2.VideoCapture(f"{str(Path(__file__).parent)}/car-count-x02.mov")
 
+
 # fps = float(cap.get(cv2.CAP_PROP_FPS))
 
 
@@ -28,9 +29,10 @@ cv2.setMouseCallback("counter_window", mouse_event)
 frame_size = (1020, 600)
 
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+output_movie_path = f"{str(Path(__file__).parent)}/ImgVideo1.avi"
 # # print(fourcc)
 video = cv2.VideoWriter(
-    f"{str(Path(__file__).parent)}/ImgVideo1.avi", fourcc, 30, frame_size
+    output_movie_path, fourcc, 30, frame_size
 )
 
 with open(ROOT_DIR / "coco.txt", "r") as f:
