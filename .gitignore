@@ -3,4 +3,5 @@ venv
 memo.txt
 *.mp4
 *.MOV
+*.avi
 *.pt
