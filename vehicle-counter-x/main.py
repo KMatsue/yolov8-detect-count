@@ -1,9 +1,10 @@
+import math
 from pathlib import Path
 
 import cv2
 import pandas as pd
 from ultralytics import YOLO
-
+import numpy as np
 from tracker import Tracker
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -29,10 +30,10 @@ cv2.setMouseCallback("counter_window", mouse_event)
 frame_size = (1020, 600)
 
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-output_movie_path = f"{str(Path(__file__).parent)}/ImgVideo1.avi"
+output_movie_path = f"{str(Path(__file__).parent)}/ImgVideo03.avi"
 # # print(fourcc)
 video = cv2.VideoWriter(
-    output_movie_path, fourcc, 30, frame_size
+    output_movie_path, fourcc, 29, frame_size
 )
 
 with open(ROOT_DIR / "coco.txt", "r") as f:
@@ -43,6 +44,7 @@ class_list: list = data.split("\n")
 count = 0
 
 tracker = Tracker()
+# tracker = Tracker2(max_distance=32)
 
 cx1: int = 500
 cx2: int = 630
@@ -59,12 +61,12 @@ while True:
     if not ret:
         break
     count += 1
-    if count % 3 != 0:
+    if count % 2 != 0:
         continue
     frame = cv2.resize(frame, frame_size)
 
     results = model.predict(frame)
-    # print(results)
+    print(results[0].boxes)
     a = results[0].boxes.data
     px = pd.DataFrame(a).astype("float")
     # print(px)
@@ -77,11 +79,15 @@ while True:
         y1 = int(row[1])
         x2 = int(row[2])
         y2 = int(row[3])
-        d = int(row[5])
-        c = class_list[d]
-        if "car" or "truck" in c:
+        conf = math.ceil(row[4] *100)
+        print(conf)
+        class_index = int(row[5])
+        detect_classnames = class_list[class_index]
+        if "car" or "truck" in detect_classnames:
             detect_list.append([x1, y1, x2, y2])
+
     bbox_ids = tracker.update(detect_list)
+
     for bbox in bbox_ids:
         x3, y3, x4, y4, id = bbox
 
@@ -178,9 +184,9 @@ while True:
     print(f"up:{up_counter}")
 
     cv2.imshow("counter_window", frame)
-    video.write(frame)
+    # video.write(frame)
 
-    if cv2.waitKey(1) & 0xFF == 27:
+    if cv2.waitKey(0) & 0xFF == 27:
         break
 
 cap.release()
@@ -188,3 +194,4 @@ cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     print("a")
+    print(np.empty((2, 5)))
