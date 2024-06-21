@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import pandas as pd
 from ultralytics import YOLO
-from tracker import Tracker
+from trackers.tracker2 import Tracker
 import cvzone
 from pathlib import Path
 import os

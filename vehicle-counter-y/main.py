@@ -4,7 +4,7 @@ import cv2
 import pandas as pd
 from ultralytics import YOLO
 
-from tracker import Tracker
+from trackers.tracker import Tracker
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
